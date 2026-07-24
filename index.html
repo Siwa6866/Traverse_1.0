@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>โปรแกรมคำนวณและปรับแก้วงรอบปิด</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- ดาวน์โหลด Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- ดาวน์โหลด PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body>
+  <main class="page-shell">
+
+    <header class="app-header">
+      <h1>โปรแกรมคำนวณและปรับแก้วงรอบปิด</h1>
+      <p class="header-lead">Closed Traverse Adjustment: Compass Rule และ Transit Rule</p>
+      <p>กำหนดทิศทางเริ่มต้นจากพิกัดจุด A–O และมุมผูกจากแนว AO ไปยังแนว AB</p>
+      <p>ตรวจสอบค่าคลาดปิดมุมด้วยเกณฑ์ C√N และ Error of Closure</p>
+      <p>สำหรับใช้ในการเรียนการสอน คณะวิศวกรรมศาสตร์ มหาวิทยาลัยมหาสารคาม</p>
+      <p><strong>ผู้พัฒนา ผศ.ดร.ศิวา แก้วปลั่ง | วันที่พัฒนา 25 กรกฎาคม 2569</strong></p>
+    </header>
+
+    <section class="layout-grid">
+
+      <aside class="card controls-card">
+        <h2>1. การตั้งค่าวงรอบ</h2>
+
+        <label>
+          วิธีปรับแก้พิกัด
+          <select id="adjustmentMethod">
+            <option value="compass">Compass Rule</option>
+            <option value="transit">Transit Rule</option>
+          </select>
+        </label>
+
+        <label>
+          ทิศทางการเดินวงรอบ
+          <select id="traverseDirection">
+            <option value="clockwise">ตามเข็มนาฬิกา</option>
+            <option value="counterclockwise">ทวนเข็มนาฬิกา</option>
+          </select>
+        </label>
+
+        <h3>เกณฑ์ตรวจสอบค่าคลาดปิดมุม</h3>
+        <label>
+          ค่าความคลาดเคลื่อนพื้นฐาน C (ฟิลิปดา)
+          <input id="angularTolerance" type="number" value="30" min="0.01" step="1">
+        </label>
+
+        <div class="formula-box">
+          <strong>เกณฑ์ที่ยอมให้</strong><br>
+          |fβ| ≤ C × √N
+        </div>
+
+        <h3>เกณฑ์ Error of Closure</h3>
+        <label>
+          เกณฑ์ความละเอียดวงรอบ 1 : x
+          <input id="closureStandard" type="number" value="5000" min="1" step="100">
+        </label>
+
+        <h3>พิกัดจุด A</h3>
+        <div class="two-column">
+          <label>
+            Easting A (m)
+            <input id="aE" type="number" value="500000.000" step="0.001">
+          </label>
+          <label>
+            Northing A (m)
+            <input id="aN" type="number" value="1800000.000" step="0.001">
+          </label>
+        </div>
+
+        <h3>พิกัดจุดอ้างอิง O</h3>
+        <div class="two-column">
+          <label>
+            Easting O (m)
+            <input id="oE" type="number" value="500000.000" step="0.001">
+          </label>
+          <label>
+            Northing O (m)
+            <input id="oN" type="number" value="1800100.000" step="0.001">
+          </label>
+        </div>
+
+        <h3>มุมผูกจากแนว AO ไปแนว AB</h3>
+
+        <label>
+          ทิศทางการวัดมุมผูก
+          <select id="tieDirection">
+            <option value="right">หมุนขวา / ตามเข็มนาฬิกา</option>
+            <option value="left">หมุนซ้าย / ทวนเข็มนาฬิกา</option>
+          </select>
+        </label>
+
+        <div class="three-column">
+          <label>
+            องศา
+            <input id="tieDeg" type="number" value="90" min="0" max="359" step="1">
+          </label>
+          <label>
+            ลิปดา
+            <input id="tieMin" type="number" value="0" min="0" max="59" step="1">
+          </label>
+          <label>
+            ฟิลิปดา
+            <input id="tieSec" type="number" value="0" min="0" max="59.999" step="0.01">
+          </label>
+        </div>
+
+        <div id="orientationPreview" class="orientation-box"></div>
+
+        <button id="calculateButton" class="button primary large">
+          คำนวณและปรับแก้วงรอบ
+        </button>
+      </aside>
+
+      <section class="card data-card">
+        <h2>2. ข้อมูลหมุด มุมภายใน และระยะทาง</h2>
+
+        <div class="note-box">
+          แถวแรกต้องเป็นหมุด A มุมในแต่ละแถวคือมุมภายในที่หมุดนั้น
+          และระยะทางแต่ละแถวคือระยะจากหมุดนั้นไปยังหมุดถัดไป
+          ส่วนแถวสุดท้ายคือระยะกลับมายังหมุด A
+        </div>
+
+        <div class="button-row">
+          <button id="addStationButton" class="button success">เพิ่มหมุดวงรอบ</button>
+          <button id="removeStationButton" class="button danger">ลดหมุดวงรอบ</button>
+          <button id="resetButton" class="button secondary">คืนค่าข้อมูลตัวอย่าง</button>
+        </div>
+
+        <div class="table-wrap">
+          <table id="inputTable">
+            <thead>
+              <tr>
+                <th>Station</th>
+                <th>องศา</th>
+                <th>ลิปดา</th>
+                <th>ฟิลิปดา</th>
+                <th>ระยะทาง (m)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <div id="errorBox" class="alert error hidden"></div>
+
+    <section id="resultsSection" class="hidden">
+
+      <div class="result-grid">
+        <section class="card">
+          <h2>3. สรุปผลการคำนวณ</h2>
+          <div id="summaryCards"></div>
+        </section>
+
+        <section class="card">
+          <h2>4. รูปวงรอบ</h2>
+          <canvas id="traverseCanvas" width="1000" height="700"></canvas>
+          <p class="figure-note">
+            รูปเป็นการวาดเพื่อแสดงลักษณะการคำนวณ ไม่ใช่แบบก่อสร้าง
+          </p>
+        </section>
+      </div>
+
+      <section class="card">
+        <h2>5. ตารางผลการคำนวณแต่ละด้าน</h2>
+        <div class="table-wrap">
+          <table id="resultTable"></table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>6. ตารางพิกัดหมุดก่อนและหลังปรับแก้</h2>
+        <div class="table-wrap">
+          <table id="coordinateTable"></table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>7. ดาวน์โหลดผลการคำนวณ</h2>
+        <div class="download-grid">
+          <button id="downloadDetailCsv" class="button secondary">ดาวน์โหลดรายการคำนวณ CSV</button>
+          <button id="downloadCoordinatesCsv" class="button secondary">ดาวน์โหลดพิกัด CSV</button>
+          <button id="downloadExcel" class="button success">ดาวน์โหลดผลทั้งหมด Excel</button>
+          <button id="downloadPdf" class="button primary">ดาวน์โหลดรายงาน PDF</button>
+          <button id="printReport" class="button secondary">พิมพ์ / Save as PDF</button>
+        </div>
+      </section>
+
+    </section>
+
+    <footer>
+      <strong>ผู้พัฒนา ผศ.ดร.ศิวา แก้วปลั่ง</strong><br>
+      สำหรับใช้ในการเรียนการสอน คณะวิศวกรรมศาสตร์ มหาวิทยาลัยมหาสารคาม
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

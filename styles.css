@@ -1,0 +1,325 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f3f6f9;
+  font-family: Arial, Tahoma, sans-serif;
+  color: #243447;
+}
+
+.page-shell {
+  width: min(1600px, calc(100% - 28px));
+  margin: 14px auto 40px;
+}
+
+.app-header {
+  padding: 26px;
+  margin-bottom: 20px;
+  color: white;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #123b5d, #176b87, #1f8a70);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18);
+}
+
+.app-header h1 {
+  margin: 0 0 10px;
+}
+
+.app-header p {
+  margin: 5px 0;
+}
+
+.header-lead {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.82fr) minmax(620px, 1.8fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.85fr) minmax(600px, 1.3fr);
+  gap: 18px;
+}
+
+.card {
+  padding: 20px;
+  margin-bottom: 18px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+  margin: 0 0 18px;
+  padding-bottom: 9px;
+  color: #123b5d;
+  border-bottom: 2px solid #1f8a70;
+}
+
+.card h3 {
+  margin: 18px 0 10px;
+  color: #176b87;
+}
+
+label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+input,
+select {
+  width: 100%;
+  min-height: 40px;
+  margin-top: 6px;
+  padding: 8px 10px;
+  font: inherit;
+  background: white;
+  border: 1px solid #b8c4ce;
+  border-radius: 8px;
+}
+
+.two-column,
+.three-column {
+  display: grid;
+  gap: 10px;
+}
+
+.two-column {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.three-column {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.formula-box,
+.note-box,
+.orientation-box,
+.summary-box {
+  padding: 13px;
+  margin: 12px 0;
+  border-radius: 8px;
+  line-height: 1.65;
+}
+
+.formula-box {
+  background: #f5f3ff;
+  border-left: 5px solid #7253c7;
+}
+
+.note-box {
+  background: #fff8e5;
+  border-left: 5px solid #e3a008;
+}
+
+.orientation-box {
+  background: #eef9f3;
+  border-left: 5px solid #1f8a70;
+}
+
+.summary-box {
+  background: #eef7fa;
+  border-left: 5px solid #176b87;
+}
+
+.status-ok {
+  color: #198754;
+  font-weight: 800;
+}
+
+.status-not-ok {
+  color: #bb2d3b;
+  font-weight: 800;
+}
+
+.button-row,
+.download-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.button-row {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.download-grid {
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+}
+
+.button {
+  min-height: 42px;
+  padding: 10px 14px;
+  color: white;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  border: 0;
+  border-radius: 8px;
+}
+
+.button.large {
+  width: 100%;
+  min-height: 50px;
+  font-size: 16px;
+}
+
+.primary {
+  background: #176b87;
+}
+
+.success {
+  background: #198754;
+}
+
+.danger {
+  background: #bb2d3b;
+}
+
+.secondary {
+  background: #617485;
+}
+
+.button:hover {
+  filter: brightness(0.95);
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th,
+td {
+  padding: 9px 10px;
+  text-align: center;
+  white-space: nowrap;
+  border: 1px solid #d7e0e7;
+}
+
+th {
+  color: white;
+  background: #176b87;
+}
+
+td.numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#inputTable input {
+  min-width: 90px;
+  margin: 0;
+  text-align: center;
+}
+
+#inputTable td:last-child input {
+  min-width: 120px;
+  text-align: right;
+}
+
+.alert {
+  padding: 14px;
+  margin: 16px 0;
+  border-radius: 8px;
+}
+
+.alert.error {
+  color: #842029;
+  background: #f8d7da;
+  border: 1px solid #f5c2c7;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#traverseCanvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: white;
+  border: 1px solid #d7e0e7;
+  border-radius: 8px;
+}
+
+.figure-note {
+  text-align: center;
+  color: #687780;
+}
+
+footer {
+  padding: 20px;
+  text-align: center;
+  color: #536471;
+}
+
+@media (max-width: 1050px) {
+  .layout-grid,
+  .result-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .download-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .two-column,
+  .three-column,
+  .button-row,
+  .download-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-shell {
+    width: min(100% - 14px, 1600px);
+  }
+}
+
+@media print {
+  body {
+    background: white;
+  }
+
+  .controls-card,
+  .data-card,
+  .download-grid,
+  #errorBox,
+  footer {
+    display: none !important;
+  }
+
+  .page-shell {
+    width: 100%;
+    margin: 0;
+  }
+
+  .app-header,
+  .card {
+    box-shadow: none;
+  }
+
+  .result-grid {
+    display: block;
+  }
+
+  table {
+    font-size: 9px;
+  }
+}
